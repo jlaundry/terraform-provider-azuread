@@ -33,6 +33,7 @@ func (r Registration) SupportedResources() map[string]*schema.Resource {
 		"azuread_application":                               applicationResource(),
 		"azuread_application_certificate":                   applicationCertificateResource(),
 		"azuread_application_federated_identity_credential": applicationFederatedIdentityCredentialResource(),
+		"azuread_application_identifier_uris":               applicationIdentifierUrisResource(),
 		"azuread_application_password":                      applicationPasswordResource(),
 		"azuread_application_pre_authorized":                applicationPreAuthorizedResource(),
 	}
