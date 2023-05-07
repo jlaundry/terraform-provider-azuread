@@ -146,7 +146,32 @@ func applicationIdentifierUrisResourceRead(ctx context.Context, d *schema.Resour
 }
 
 func applicationIdentifierUrisResourceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint
-	//TODO - set to empty List() ?
+	client := meta.(*clients.Client).Applications.ApplicationsClient
+
+	tf.LockByName(applicationResourceName, d.Id())
+	defer tf.UnlockByName(applicationResourceName, d.Id())
+
+	app, status, err := client.Get(ctx, d.Id(), odata.Query{})
+	if err != nil {
+		if status == http.StatusNotFound {
+			return tf.ErrorDiagPathF(nil, "application_object_id", "Application with object ID %q was not found", d.Id())
+		}
+		return tf.ErrorDiagPathF(err, "application_object_id", "Retrieving application with object ID %q", d.Id())
+	}
+	if app == nil || app.ID() == nil {
+		return tf.ErrorDiagF(errors.New("nil application or application with nil ID was returned"), "API error retrieving application with object ID %q", d.Id())
+	}
+
+	properties := msgraph.Application{
+		DirectoryObject: msgraph.DirectoryObject{
+			Id: utils.String(d.Id()),
+		},
+		IdentifierUris: tf.ExpandStringSlicePtr(make([]interface{}, 0)),
+	}
+
+	if _, err := client.Update(ctx, properties); err != nil {
+		return tf.ErrorDiagF(err, "Could not update application with object ID: %q", d.Id())
+	}
 
 	return nil
 }
