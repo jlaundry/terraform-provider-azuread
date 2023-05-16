@@ -42,7 +42,7 @@ func applicationIdentifierUrisResource() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"application_object_id": {
-				Description:      "The object ID of the application for which this federated identity credential should be created",
+				Description:      "The object ID of the application for which the identifier_uris should be managed",
 				Type:             schema.TypeString,
 				Required:         true,
 				ForceNew:         true,
